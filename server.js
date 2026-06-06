@@ -18,6 +18,7 @@ app.get('/api/health', (req, res) => {
 app.get('/api/vehiculos/:empresaId', async (req, res) => {
   try {
     const { empresaId } = req.params
+    console.log('GET /api/vehiculos/:empresaId -> empresaId:', empresaId)
     if (!empresaId) {
       return res.status(400).json({ error: 'empresaId requerido' })
     }
@@ -25,9 +26,11 @@ app.get('/api/vehiculos/:empresaId', async (req, res) => {
       .from('vehiculos')
       .select('*')
       .eq('empresa_id', empresaId)
+    console.log('Supabase response:', { data: data?.length, error: error?.message })
     if (error) throw error
     res.json({ success: true, data })
   } catch (error) {
+    console.error('Error:', error)
     res.status(500).json({ error: error.message })
   }
 })
