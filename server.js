@@ -87,6 +87,23 @@ app.delete('/api/vehiculos/:id', async (req, res) => {
   }
 })
 
+app.get('/api/mantenimientos/:empresaId', async (req, res) => {
+  try {
+    const { empresaId } = req.params
+    if (!empresaId) {
+      return res.status(400).json({ error: 'empresaId requerido' })
+    }
+    const { data, error } = await supabase
+      .from('mantenimientos_programados')
+      .select('*')
+      .eq('empresa_id', empresaId)
+    if (error) throw error
+    res.json({ success: true, data })
+  } catch (error) {
+    res.status(500).json({ error: error.message })
+  }
+})
+
 const PORT = 3001
 app.listen(PORT, () => {
   console.log(`Backend corriendo en puerto ${PORT}`)
