@@ -19,6 +19,20 @@ app.get('/api/test', (req, res) => {
   res.json({ test: 'OK', timestamp: new Date().toISOString() })
 })
 
+app.get('/api/vehiculos', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('vehiculos')
+      .select('*')
+    console.log('GET /api/vehiculos -> total:', data?.length)
+    if (error) throw error
+    res.json({ success: true, data })
+  } catch (error) {
+    console.error('Error:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
 app.get('/api/vehiculos/:empresaId', async (req, res) => {
   try {
     const { empresaId } = req.params
