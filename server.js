@@ -15,6 +15,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend funcionando' })
 })
 
+app.get('/api/test', (req, res) => {
+  res.json({ test: 'OK', timestamp: new Date().toISOString() })
+})
+
 app.get('/api/vehiculos/:empresaId', async (req, res) => {
   try {
     const { empresaId } = req.params
