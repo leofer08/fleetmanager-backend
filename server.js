@@ -101,6 +101,27 @@ const getPerfil = async (userId) => {
   return data
 }
 
+// ── MIDDLEWARE SEGURIDAD: loguear 401/429 a security_events ─────────────────
+app.use((req, res, next) => {
+  const originalJson = res.json.bind(res)
+  res.json = function (body) {
+    const status = res.statusCode
+    if (status === 401 || status === 429) {
+      const ip = req.ip || req.socket?.remoteAddress || 'unknown'
+      supabase.from('security_events').insert({
+        tipo: status === 401 ? '401_unauthorized' : '429_rate_limit',
+        ip,
+        endpoint: req.path,
+        metodo: req.method,
+        user_agent: req.headers['user-agent']?.slice(0, 200) || null
+      }).then(() => {}).catch(() => {}) // fire-and-forget, sin bloquear respuesta
+    }
+    return originalJson(body)
+  }
+  next()
+})
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Rutas publicas
 app.get('/api/health', limiterHealth, (req, res) => {
   res.json({ status: 'ok' })
